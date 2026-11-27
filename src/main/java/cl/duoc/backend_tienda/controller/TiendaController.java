@@ -1,4 +1,4 @@
-package cl.duoc.backend_tienda.controller;
+﻿package cl.duoc.backend_tienda.controller;
 
 import cl.duoc.backend_tienda.model.*;
 import cl.duoc.backend_tienda.repository.*;
@@ -38,6 +38,20 @@ public class TiendaController {
     @PostMapping("/productos")
     public Producto crearProducto(@RequestBody Producto producto) {
         return productoRepo.save(producto);
+    }
+
+    @PutMapping("/productos/{id}")
+    public ResponseEntity<Producto> actualizarProducto(@PathVariable Long id, @RequestBody Producto datos) {
+        return productoRepo.findById(id).map(prod -> {
+            prod.setNombre(datos.getNombre());
+            prod.setDescripcion(datos.getDescripcion());
+            prod.setPrecio(datos.getPrecio());
+            prod.setStock(datos.getStock());
+            if (datos.getCategoria() != null) {
+                prod.setCategoria(datos.getCategoria());
+            }
+            return ResponseEntity.ok(productoRepo.save(prod));
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/productos/{id}")
